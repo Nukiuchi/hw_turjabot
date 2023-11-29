@@ -29,6 +29,8 @@ namespace hw_turjabot
 hardware_interface::CallbackReturn TurjabotHardware::on_init(
   const hardware_interface::HardwareInfo & info)
 {
+  
+  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Starting init func ...please wait...");
   if (
     hardware_interface::SystemInterface::on_init(info) !=
     hardware_interface::CallbackReturn::SUCCESS)
@@ -41,7 +43,7 @@ hardware_interface::CallbackReturn TurjabotHardware::on_init(
   cfg_.steer_wheel_name = info_.hardware_parameters["left_steer_wheel_name"];
   cfg_.camera_pan_name = info_.hardware_parameters["camera_pan_name"];
   cfg_.camera_tilt_name = info_.hardware_parameters["camera_tilt_name"];
-  cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
+  //cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
   cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
 
   wheel_dl_.setup(cfg_.left_drive_wheel_name, cfg_.enc_counts_per_rev);
@@ -51,9 +53,10 @@ hardware_interface::CallbackReturn TurjabotHardware::on_init(
   servo_cam_pan_.setup(cfg_.camera_pan_name);
   servo_cam_tilt_.setup(cfg_.camera_tilt_name);
 
+
     // TurjabotHardware has 2 states, 1 command for drive wheels.
     //                      Pos, Vel states, Vel command
-    //                      1 state, 1 command for steer and cam servos.
+    //                  1 state, 1 command for steer and cam servos.
     //                      Pos states, Pos command
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -140,6 +143,7 @@ hardware_interface::CallbackReturn TurjabotHardware::on_init(
     }
   }
 
+
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -157,6 +161,14 @@ std::vector<hardware_interface::StateInterface> TurjabotHardware::export_state_i
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     wheel_dr_.name, hardware_interface::HW_IF_VELOCITY, &wheel_dr_.vel));
 
+  
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    servo_steer_.name, hardware_interface::HW_IF_POSITION, &servo_steer_.pos));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    servo_cam_pan_.name, hardware_interface::HW_IF_POSITION, &servo_cam_pan_.pos));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    servo_cam_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_cam_tilt_.pos));
+
   return state_interfaces;
 }
 
@@ -168,6 +180,14 @@ std::vector<hardware_interface::CommandInterface> TurjabotHardware::export_comma
     wheel_dl_.name, hardware_interface::HW_IF_VELOCITY, &wheel_dl_.vel));
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
     wheel_dr_.name, hardware_interface::HW_IF_VELOCITY, &wheel_dr_.vel));
+
+
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    servo_steer_.name, hardware_interface::HW_IF_POSITION, &servo_steer_.pos));
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    servo_cam_pan_.name, hardware_interface::HW_IF_POSITION, &servo_cam_pan_.pos));
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    servo_cam_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_cam_tilt_.pos));
 
   return command_interfaces;
 }
@@ -231,8 +251,8 @@ hardware_interface::return_type TurjabotHardware::read(
 hardware_interface::return_type hw_turjabot ::TurjabotHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
-  int motor_dl_counts_per_loop = wheel_dl_.cmd / wheel_dl_.rads_per_count / cfg_.loop_rate;
-  int motor_dr_counts_per_loop = wheel_dr_.cmd / wheel_dr_.rads_per_count / cfg_.loop_rate;
+  int motor_dl_counts_per_loop = wheel_dl_.cmd / wheel_dl_.rads_per_count; // / cfg_.loop_rate;
+  int motor_dr_counts_per_loop = wheel_dr_.cmd / wheel_dr_.rads_per_count; // / cfg_.loop_rate;
   comms_.set_motor_values(motor_dl_counts_per_loop, motor_dr_counts_per_loop);
 
   
