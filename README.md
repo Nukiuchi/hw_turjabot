@@ -7,4 +7,4 @@
 
 More documentation and stuff at [control.ros.org](https://control.ros.org/master/doc/ros2_control_demos/example_2/doc/userdoc.html).
 
-This repo is based on the example_2 package from Ros2_control, as well as Articulated Robotics tutorial.
+This repo is based on the example_2 package from Ros2_control, as well as Articulated Robotics tutorial. pöö
