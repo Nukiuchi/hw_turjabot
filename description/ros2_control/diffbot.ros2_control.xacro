@@ -8,15 +8,11 @@
         <plugin>hw_turjabot/TurjabotHardware</plugin>
         <param name="left_drive_wheel_name">left_drive_wheel_joint</param>
         <param name="right_drive_wheel_name">right_drive_wheel_joint</param>
-        <param name="steer_wheel_name">left_chassis_steer_joint</param>
+        <param name="left_steer_wheel_name">left_chassis_steer_joint</param>
+        <param name="right_steer_wheel_name">right_chassis_steer_joint</param>
         <param name="camera_pan_name">camera_pan_joint</param>
         <param name="camera_tilt_name">camera_tilt_joint</param>
-        <param name="loop_rate">30</param>
-        <param name="enc_counts_per_rev">3436</param>
-        <param name="pid_p">20</param>
-        <param name="pid_d">12</param>
-        <param name="pid_i">0</param>
-        <param name="pid_o">50</param>
+        <param name="enc_counts_per_rev">1280</param>
       </hardware>
       <joint name="${prefix}left_drive_wheel_joint">
         <command_interface name="velocity"/>

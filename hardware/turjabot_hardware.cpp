@@ -40,7 +40,8 @@ hardware_interface::CallbackReturn TurjabotHardware::on_init(
 
   cfg_.left_drive_wheel_name = info_.hardware_parameters["left_drive_wheel_name"];
   cfg_.right_drive_wheel_name = info_.hardware_parameters["right_drive_wheel_name"];
-  cfg_.steer_wheel_name = info_.hardware_parameters["left_steer_wheel_name"];
+  cfg_.left_steer_wheel_name = info_.hardware_parameters["left_steer_wheel_name"];
+  cfg_.right_steer_wheel_name = info_.hardware_parameters["right_steer_wheel_name"];
   cfg_.camera_pan_name = info_.hardware_parameters["camera_pan_name"];
   cfg_.camera_tilt_name = info_.hardware_parameters["camera_tilt_name"];
   //cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
@@ -49,7 +50,8 @@ hardware_interface::CallbackReturn TurjabotHardware::on_init(
   wheel_dl_.setup(cfg_.left_drive_wheel_name, cfg_.enc_counts_per_rev);
   wheel_dr_.setup(cfg_.right_drive_wheel_name, cfg_.enc_counts_per_rev);
   
-  servo_steer_.setup(cfg_.steer_wheel_name);
+  servo_l_steer_.setup(cfg_.left_steer_wheel_name);
+  servo_r_steer_.setup(cfg_.right_steer_wheel_name);
   servo_cam_pan_.setup(cfg_.camera_pan_name);
   servo_cam_tilt_.setup(cfg_.camera_tilt_name);
 
@@ -163,11 +165,21 @@ std::vector<hardware_interface::StateInterface> TurjabotHardware::export_state_i
 
   
   state_interfaces.emplace_back(hardware_interface::StateInterface(
-    servo_steer_.name, hardware_interface::HW_IF_POSITION, &servo_steer_.pos));
+    servo_l_steer_.name, hardware_interface::HW_IF_POSITION, &servo_l_steer_.pos));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+    servo_r_steer_.name, hardware_interface::HW_IF_POSITION, &servo_r_steer_.pos));
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     servo_cam_pan_.name, hardware_interface::HW_IF_POSITION, &servo_cam_pan_.pos));
   state_interfaces.emplace_back(hardware_interface::StateInterface(
     servo_cam_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_cam_tilt_.pos));
+
+  for (const hardware_interface::StateInterface & ifc : state_interfaces)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Name of interface: %s", ifc.get_name().c_str());
+  }
+  
+  
+  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "\r\nState Interfaces exported!\r\n");
 
   return state_interfaces;
 }
@@ -183,11 +195,21 @@ std::vector<hardware_interface::CommandInterface> TurjabotHardware::export_comma
 
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    servo_steer_.name, hardware_interface::HW_IF_POSITION, &servo_steer_.pos));
+    servo_l_steer_.name, hardware_interface::HW_IF_POSITION, &servo_l_steer_.pos));
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    servo_r_steer_.name, hardware_interface::HW_IF_POSITION, &servo_r_steer_.pos));
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
     servo_cam_pan_.name, hardware_interface::HW_IF_POSITION, &servo_cam_pan_.pos));
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
     servo_cam_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_cam_tilt_.pos));
+
+  
+  for (const hardware_interface::CommandInterface & ifc : command_interfaces)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Name of interface: %s", ifc.get_name().c_str());
+  }
+  
+  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "\r\nCommand Interfaces exported!\r\n");
 
   return command_interfaces;
 }
@@ -245,6 +267,10 @@ hardware_interface::return_type TurjabotHardware::read(
 
   // TODO: Servo read position
 
+
+  
+  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got read request!");
+
   return hardware_interface::return_type::OK;
 }
 
@@ -257,6 +283,9 @@ hardware_interface::return_type hw_turjabot ::TurjabotHardware::write(
 
   
   // TODO: Servo write position
+
+  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got write request!");
+
 
   return hardware_interface::return_type::OK;
 }

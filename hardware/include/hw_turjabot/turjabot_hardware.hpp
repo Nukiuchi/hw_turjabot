@@ -44,7 +44,8 @@ class TurjabotHardware : public hardware_interface::SystemInterface
   struct Config {
     std::string left_drive_wheel_name = "";
     std::string right_drive_wheel_name = "";
-    std::string steer_wheel_name = "";
+    std::string left_steer_wheel_name = "";
+    std::string right_steer_wheel_name = "";
     std::string camera_pan_name = "";
     std::string camera_tilt_name = "";
     float loop_rate = 0.0;
@@ -88,7 +89,8 @@ private:
   Wheel wheel_dl_;
   Wheel wheel_dr_;
 
-  Servo servo_steer_;
+  Servo servo_l_steer_;
+  Servo servo_r_steer_;
   Servo servo_cam_pan_;
   Servo servo_cam_tilt_;
 };
