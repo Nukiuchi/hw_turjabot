@@ -5,12 +5,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
 endif()
 
+
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   hardware_interface
   pluginlib
   rclcpp
   rclcpp_lifecycle
+  PythonLibs
+  pybind11
 )
 
 # find dependencies
@@ -19,6 +22,8 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(/usr/local/include/python3.10)
 
 ## COMPILE
 add_library(
@@ -27,10 +32,13 @@ add_library(
   hardware/turjabot_hardware.cpp
 )
 target_compile_features(hw_turjabot PUBLIC cxx_std_17)
+
 target_include_directories(hw_turjabot PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
 $<INSTALL_INTERFACE:include/hw_turjabot>
 )
+
+
 ament_target_dependencies(
   hw_turjabot PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
@@ -40,6 +48,7 @@ ament_target_dependencies(
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(${PROJECT_NAME} PRIVATE "HW_TURJABOT_BUILDING_DLL")
+
 
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface hw_turjabot.xml)

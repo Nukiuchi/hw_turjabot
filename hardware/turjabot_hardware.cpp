@@ -269,7 +269,6 @@ hardware_interface::return_type TurjabotHardware::read(
 
 
   
-  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got read request!");
 
   return hardware_interface::return_type::OK;
 }
@@ -283,9 +282,13 @@ hardware_interface::return_type hw_turjabot ::TurjabotHardware::write(
 
   
   // TODO: Servo write position
-
-  RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got write request!");
-
+  if(wheel_dl_.cmd != 0) {
+    RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got write request, cmd: %g", wheel_dl_.cmd);
+  }
+  if(wheel_dr_.cmd != 0) {
+    RCLCPP_INFO(rclcpp::get_logger("TurjabotHardware"), "Got write request, cmd: %g", wheel_dr_.cmd);
+  }
+  
 
   return hardware_interface::return_type::OK;
 }

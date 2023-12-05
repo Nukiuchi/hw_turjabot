@@ -1,19 +1,24 @@
 #ifndef HW_TURJABOT_TURJABOT_COMMS_HPP
 #define HW_TURJABOT_TURJABOT_COMMS_HPP
 
-// #include <cstring>
+#include <cstdlib>
 #include <sstream>
-// #include <cstdlib>
+#include <iomanip>
 #include <iostream>
-
-
+#include <pybind11/embed.h>
 
 class TurjabotComms
 {
 
 public:
 
-  TurjabotComms() = default;
+  TurjabotComms() {
+    pybind11::scoped_interpreter guard{}; // start the interpreter and keep it alive
+
+    // pybind11::object get_battery_voltage = pybind11::module_::import("robot_hat.utils").attr("get_battery_voltage");
+
+    // std::cout << "Voltage is " << get_battery_voltage().cast<double>() << " volts." << std::endl;
+  }
 
   void read_encoder_values(int &val_1, int &val_2)
   {
@@ -28,6 +33,8 @@ public:
     val_1 = std::atoi(token_1.c_str());
     val_2 = std::atoi(token_2.c_str());
   }
+
+
   void set_motor_values(int val_1, int val_2)
   {
     std::stringstream ss;
